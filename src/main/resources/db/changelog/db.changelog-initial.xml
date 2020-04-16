@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+	logicalFilePath="db.changelog-initial.xml">
+
+    <changeSet author="merlinsn@gmail.com" id="se-20200416-1">
+        <createTable tableName="post">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="code" type="BIGINT" />
+            <column name="timestamp" type="DATETIME" />
+            <column name="stuff" type="VARCHAR(100)" />
+            <column name="content" type="CLOB" />
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

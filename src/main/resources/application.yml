@@ -1,0 +1,35 @@
+info:
+  app:
+    name: search-engine
+
+server:
+  port: 8000
+
+spring:
+  application:
+    name: ${info.app.name}
+  jpa:
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/the_bad_touch
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+    type: com.zaxxer.hikari.HikariDataSource
+  profiles:
+    active: local
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+logging:
+  level:
+    com:
+      thebadtouch: DEBUG
+

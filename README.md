@@ -1,19 +1,40 @@
-Proyecto para el TP 1 de DLC UTN
-Trabajo Práctico Único [Motor de Búsqueda - Modelo Vectorial]
-Enunciado y Consignas:
+# Docker
 
-El trabajo para el práctico integrador será el desarrollo de un motor de búsqueda, en base a los principios enunciados en las clases del teórico de la materia. Los requisitos básicos para ese motor serán los siguientes:
+Docker related files:
+* Dockerfiles
+* docker-compose files
 
-1.) El motor debe diseñarse para ser usado sobre una base de datos documental, que contendrá sólo archivos de texto plano (extensión .txt). La carpeta original con todos los documentos a indexar está en la dirección: https://drive.google.com/folderview?id=0B_R7SeoAotsmUUtYendIX04zRjA&usp=sharing.  La carpeta indicada contiene 500 documentos y cada uno de ellos es una obra literaria en idioma inglés. No hay links a otros documentos dentro de cada uno de los archivos de texto provistos.
+## Postgres
+These instructions will get you a postgres database with all necessary tables to develop in you local
 
-2.) Se pide usar el modelo vectorial para el desarrollo del motor. El modelo vectorial es muy conocido, y nuestra exigencia  se justifica en cuanto a que los alumnos dominen una tecnología muy difundida y básica antes de lanzarse a otras más novedosas.
+### Prerequisities
+* Docker Installed: 
+    * with Hyper-V: [Download](https://store.docker.com/editions/community/docker-ce-desktop-windows)
+    * without Hyper-V: [Download](https://www.docker.com/products/docker-toolbox)
 
-3.) Los alumnos podrían descargar los documentos e indexarlos y buscarlos en forma local. Lo ideal sería que al momento de la entrega el motor indexe los documentos directamente desde la carpeta cuyo url se indica más arriba, y proceder a responder consultas tomando los archivos desde la misma carpeta, pero como en la práctica se está pidiendo un prototipo, se aceptará que los documentos sean contenidos localmente.
+### For Windows:
+* Install docker for windows (Requires Windows Pro or higher) https://hub.docker.com/editions/community/docker-ce-desktop-windows
 
-4.) Deberán tener especial cuidado en el diseño y la implementación de la lista de posteo de cada término, para evitar una ocupación de disco exagerada. Las listas de posteo pueden venir implementadas en bases de datos (quedando para el alumno el diseño de las mismas), aunque aclaramos que en una situación real, y por razones de performance, las listas de posteo suelen implementarse en archivos binarios gestionados directamente por el programador, y no en bases de datos.
 
-5.) Se supone que la interfaz del sistema debe permitir una consulta abierta, y el buscador debe mostrar un listado con los títulos de los documentos más relevantes para esa consulta. Cada título debe venir como hipervínculo (link) al documento real, el cual debe abrirse (o descargarse) si el link es activado. Sin embargo, no es obligatorio el diseño de una interfaz web para el usuario final.  
+### Build Image
+Get inside the postgres repo directory for your operating system and run
+\search-engine\postgres (linux or windows)
 
-6.) Deben usarse elementos básicos de la plataforma JEE para el desarrollo del Motor, de modo que se apliquen al mismo tiempo los conceptos aprendidos en el práctico y en el teórico. Se proveerá a los alumnos de un par de modelos conteniendo la arquitectura básica de arranque, de forma que puedan completarla incorporando en ella el  módulo de indexación y el módulo de búsqueda.
+```
+docker image build -f winDockerfile -t apc/postgres:latest .
+```
 
-7.) Cualquier agregado será bienvenido, siempre y cuando el trabajo se termine completamente dentro de un período prudencial de tiempo en el cursado de la materia. Los estudiantes deben calcular que el desarrollo completo no les insuma más de un mes de trabajo durante el cursado.
+Verify the image was created successfully:
+```
+docker images
+```
+
+### Create and Run the container
+*For Linux:
+```
+ docker run --name apcpostgres  -p 5432:5432 -e POSTGRES_PASSWORD=postgres apc/postgres:latest -d postgres
+```
+*For Windows:
+```
+ docker run --name apcpostgres -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres apc/postgres:latest
+```
