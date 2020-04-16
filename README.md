@@ -1,3 +1,7 @@
+#Access Swagger by:
+
+http://localhost:8000/swagger-ui.html
+
 # Docker
 
 Docker related files:
