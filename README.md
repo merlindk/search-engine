@@ -21,7 +21,7 @@ Get inside the postgres repo directory for your operating system and run
 \search-engine\postgres (linux or windows)
 
 ```
-docker image build -f winDockerfile -t apc/postgres:latest .
+docker image build -f Dockerfile -t apc/postgres:latest .
 ```
 
 Verify the image was created successfully:
