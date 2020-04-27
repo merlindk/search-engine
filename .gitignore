@@ -27,7 +27,7 @@ nbdist/
 
 *.episode
 /bin/
-
+/files/*.txt
 ### Schema Classes ###
 
 nb-configuration.xml

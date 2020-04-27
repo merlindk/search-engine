@@ -1,43 +1,54 @@
 package com.thebadtouch.searchengine.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.persistence.*;
+import java.util.Objects;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.io.Serializable;
-import java.util.Date;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "post")
-public class Post implements Serializable {
+public class Post {
+    private Integer postId;
+    private Vocabulary vocabularyByVocabId;
+    private Document documentByDocId;
 
-    private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Long id;
-    @Column(name = "code")
-    private Long code;
-    @Column(name = "timestamp")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
-    @Column(name = "stuff")
-    private String stuff;
-    @Column(name = "content")
-    private String content;
+    @Column(name = "post_id", nullable = false)
+    public Integer getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Integer postId) {
+        this.postId = postId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return Objects.equals(postId, post.postId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(postId);
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "vocab_id", referencedColumnName = "vocab_id")
+    public Vocabulary getVocabularyByVocabId() {
+        return vocabularyByVocabId;
+    }
+
+    public void setVocabularyByVocabId(Vocabulary vocabularyByVocabId) {
+        this.vocabularyByVocabId = vocabularyByVocabId;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "doc_id", referencedColumnName = "doc_id")
+    public Document getDocumentByDocId() {
+        return documentByDocId;
+    }
+
+    public void setDocumentByDocId(Document documentByDocId) {
+        this.documentByDocId = documentByDocId;
+    }
 }

@@ -6,7 +6,6 @@
     <springProperty scope="context" name="app.name" source="info.app.name"/>
     <springProperty scope="context" name="spring.profiles.active" source="spring.profiles.active"/>
 
-    <springProfile name="local">
         <springProperty scope="context" name="app.region" source="app.region"/>
 
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -22,7 +21,6 @@
             <discardingThreshold>0</discardingThreshold>
             <appender-ref ref="CONSOLE"/>
         </appender>
-    </springProfile>
 
     <root level="INFO">
         <appender-ref ref="ASYNC"/>

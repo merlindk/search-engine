@@ -1,18 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
-	logicalFilePath="db.changelog-initial.xml">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+                   logicalFilePath="db.changelog-initial.xml">
 
     <changeSet author="merlinsn@gmail.com" id="se-20200416-1">
-        <createTable tableName="post">
-            <column autoIncrement="true" name="id" type="INT">
-                <constraints nullable="false" primaryKey="true" />
+
+        <createTable tableName="vocabulary">
+            <column autoIncrement="true" name="vocab_id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="code" type="BIGINT" />
-            <column name="timestamp" type="DATETIME" />
-            <column name="stuff" type="VARCHAR(100)" />
-            <column name="content" type="CLOB" />
+            <column name="word" type="VARCHAR()"/>
+            <column name="reverse_frequency" type="FLOAT"/>
+            <column name="max_term_frequency" type="BIGINT"/>
         </createTable>
+
+        <createTable tableName="document">
+            <column autoIncrement="true" name="doc_id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR()"/>
+        </createTable>
+
+        <createTable tableName="post">
+            <column autoIncrement="true" name="post_id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="vocab_id" type="INT"/>
+            <column name="doc_id" type="INT"/>
+
+        </createTable>
+        <addForeignKeyConstraint
+                constraintName="vocab_fk"
+                baseTableName="post"
+                baseColumnNames="vocab_id"
+                referencedTableName="vocabulary"
+                referencedColumnNames="vocab_id"
+                onDelete="NO ACTION"
+                onUpdate="NO ACTION"/>
+        <addForeignKeyConstraint
+                constraintName="doc_fk"
+                baseTableName="post"
+                baseColumnNames="doc_id"
+                referencedTableName="document"
+                referencedColumnNames="doc_id"
+                onDelete="NO ACTION"
+                onUpdate="NO ACTION"/>
+
+
     </changeSet>
 </databaseChangeLog>
