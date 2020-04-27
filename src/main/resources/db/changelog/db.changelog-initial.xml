@@ -46,7 +46,5 @@
                 referencedColumnNames="doc_id"
                 onDelete="NO ACTION"
                 onUpdate="NO ACTION"/>
-
-
     </changeSet>
 </databaseChangeLog>

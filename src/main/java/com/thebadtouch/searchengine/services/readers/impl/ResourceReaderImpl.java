@@ -17,7 +17,7 @@ import java.io.Reader;
 public class ResourceReaderImpl implements ResourceReader {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceReaderImpl.class);
-    private Properties properties;
+    private final Properties properties;
 
     public ResourceReaderImpl(Properties properties) {
         this.properties = properties;

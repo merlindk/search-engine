@@ -37,7 +37,7 @@ public class IndexingServiceImpl implements IndexingService {
                     current.setMaxTermFrequency(1L);
                     vocabulary.put(word, current);
                 } else {
-                    current.setMaxTermFrequency();
+                    current.setMaxTermFrequency(1L);
                 }
             }
         }
