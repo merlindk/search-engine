@@ -1,15 +1,25 @@
 package com.thebadtouch.searchengine.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-public class Post {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Post implements Serializable {
     private Integer postId;
     private Vocabulary vocabularyByVocabId;
     private Document documentByDocId;
+    private Integer termFrequency;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id", nullable = false)
     public Integer getPostId() {
         return postId;
@@ -17,6 +27,15 @@ public class Post {
 
     public void setPostId(Integer postId) {
         this.postId = postId;
+    }
+
+    @Column(name = "term_frequency", nullable = false)
+    public Integer getTermFrequency() {
+        return termFrequency;
+    }
+
+    public void setTermFrequency(Integer termFrequency) {
+        this.termFrequency = termFrequency;
     }
 
     @Override
@@ -50,5 +69,9 @@ public class Post {
 
     public void setDocumentByDocId(Document documentByDocId) {
         this.documentByDocId = documentByDocId;
+    }
+
+    public void incrementTermFrequency(){
+        termFrequency++;
     }
 }

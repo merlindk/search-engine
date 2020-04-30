@@ -46,5 +46,5 @@ spring:
   profiles: linux
 
 application:
-  files-to-index: "/home/user/workspaces/search-engine/files/"
+  files-to-index: "files/"
   encoding: "Cp1252"

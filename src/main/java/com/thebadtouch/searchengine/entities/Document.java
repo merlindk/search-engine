@@ -1,17 +1,23 @@
 package com.thebadtouch.searchengine.entities;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-public class Document {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Document implements Serializable {
     private Integer docId;
     private String name;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "doc_id", nullable = false)
     public Integer getDocId() {
         return docId;

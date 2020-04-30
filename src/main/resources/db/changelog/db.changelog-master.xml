@@ -4,4 +4,5 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
 	logicalFilePath="db.changelog-master.xml">
 	<include file="db/changelog/db.changelog-initial.xml" />
+	<include file="db/changelog/db.changelog-add-term-frequency.xml" />
 </databaseChangeLog>
