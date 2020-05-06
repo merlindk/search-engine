@@ -7,7 +7,7 @@
     <changeSet author="merlinsn@gmail.com" id="se-20200429-1">
 
         <addColumn tableName="post">
-            <column name="term_frequency" type="INT"/>
+            <column name="term_frequency" type="BIGINT"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

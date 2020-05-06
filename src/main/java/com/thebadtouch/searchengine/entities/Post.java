@@ -12,29 +12,29 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post implements Serializable {
-    private Integer postId;
-    private Vocabulary vocabularyByVocabId;
+public class Post implements Serializable, Comparable<Post> {
+    private Long postId;
+    private Word wordByWordId;
     private Document documentByDocId;
-    private Integer termFrequency;
+    private Long termFrequency;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id", nullable = false)
-    public Integer getPostId() {
+    public Long getPostId() {
         return postId;
     }
 
-    public void setPostId(Integer postId) {
+    public void setPostId(Long postId) {
         this.postId = postId;
     }
 
     @Column(name = "term_frequency", nullable = false)
-    public Integer getTermFrequency() {
+    public Long getTermFrequency() {
         return termFrequency;
     }
 
-    public void setTermFrequency(Integer termFrequency) {
+    public void setTermFrequency(Long termFrequency) {
         this.termFrequency = termFrequency;
     }
 
@@ -52,13 +52,13 @@ public class Post implements Serializable {
     }
 
     @ManyToOne
-    @JoinColumn(name = "vocab_id", referencedColumnName = "vocab_id")
-    public Vocabulary getVocabularyByVocabId() {
-        return vocabularyByVocabId;
+    @JoinColumn(name = "word_id", referencedColumnName = "word_id")
+    public Word getWordByWordId() {
+        return wordByWordId;
     }
 
-    public void setVocabularyByVocabId(Vocabulary vocabularyByVocabId) {
-        this.vocabularyByVocabId = vocabularyByVocabId;
+    public void setWordByWordId(Word wordByVocabId) {
+        this.wordByWordId = wordByVocabId;
     }
 
     @ManyToOne
@@ -73,5 +73,11 @@ public class Post implements Serializable {
 
     public void incrementTermFrequency(){
         termFrequency++;
+    }
+
+
+    @Override
+    public int compareTo(Post o) {
+        return o.getTermFrequency().compareTo(this.termFrequency);
     }
 }

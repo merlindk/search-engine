@@ -4,7 +4,7 @@ import com.thebadtouch.searchengine.config.Properties;
 import com.thebadtouch.searchengine.dto.Result;
 import com.thebadtouch.searchengine.entities.Document;
 import com.thebadtouch.searchengine.entities.Post;
-import com.thebadtouch.searchengine.entities.Vocabulary;
+import com.thebadtouch.searchengine.entities.Word;
 import com.thebadtouch.searchengine.repositories.DocumentRepository;
 import com.thebadtouch.searchengine.repositories.PostRepository;
 import com.thebadtouch.searchengine.repositories.VocabularyRepository;
@@ -61,19 +61,20 @@ public class IndexController {
                 .map(FileSystemResource::new)
                 .collect(Collectors.toSet());
 
-        List<Post> postList = indexingService.generatePostList(resources);
+        Set<Post> postList = indexingService.generatePostList(resources);
         Set<Document> documentList = new HashSet<>();
-        Set<Vocabulary> vocabularyList = new HashSet<>();
+        Set<Word> wordList = new HashSet<>();
         for (Post post : postList) {
             documentList.add(post.getDocumentByDocId());
-            vocabularyList.add(post.getVocabularyByVocabId());
+            wordList.add(post.getWordByWordId());
         }
         documentRepository.saveAll(documentList);
         LOG.info("Saved {} documents", documentList.size());
-        vocabularyRepository.saveAll(vocabularyList);
-        LOG.info("Saved {} Vocabulary", vocabularyList.size());
-        postList = (List<Post>) postRepository.saveAll(postList);
-        LOG.info("Saved {} Posts", postList.size());
+        vocabularyRepository.saveAll(wordList);
+        LOG.info("Saved {} words", wordList.size());
+        List<Post> storedPostList = (List<Post>) postRepository.saveAll(postList);
+        LOG.info("Saved {} Posts", storedPostList.size());
+        LOG.info("Finished indexing");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

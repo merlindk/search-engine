@@ -6,36 +6,36 @@
 
     <changeSet author="merlinsn@gmail.com" id="se-20200416-1">
 
-        <createTable tableName="vocabulary">
-            <column autoIncrement="true" name="vocab_id" type="INT">
+        <createTable tableName="word">
+            <column autoIncrement="true" name="word_id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="word" type="VARCHAR()"/>
-            <column name="reverse_frequency" type="FLOAT"/>
+            <column name="value" type="VARCHAR()"/>
+            <column name="word_frequency" type="BIGINT"/>
             <column name="max_term_frequency" type="BIGINT"/>
         </createTable>
 
         <createTable tableName="document">
-            <column autoIncrement="true" name="doc_id" type="INT">
+            <column autoIncrement="true" name="doc_id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR()"/>
         </createTable>
 
         <createTable tableName="post">
-            <column autoIncrement="true" name="post_id" type="INT">
+            <column autoIncrement="true" name="post_id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="vocab_id" type="INT"/>
-            <column name="doc_id" type="INT"/>
+            <column name="word_id" type="BIGINT"/>
+            <column name="doc_id" type="BIGINT"/>
 
         </createTable>
         <addForeignKeyConstraint
-                constraintName="vocab_fk"
+                constraintName="word_fk"
                 baseTableName="post"
-                baseColumnNames="vocab_id"
-                referencedTableName="vocabulary"
-                referencedColumnNames="vocab_id"
+                baseColumnNames="word_id"
+                referencedTableName="word"
+                referencedColumnNames="word_id"
                 onDelete="NO ACTION"
                 onUpdate="NO ACTION"/>
         <addForeignKeyConstraint

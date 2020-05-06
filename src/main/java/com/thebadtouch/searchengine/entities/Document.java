@@ -13,17 +13,17 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Document implements Serializable {
-    private Integer docId;
+    private Long docId;
     private String name;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "doc_id", nullable = false)
-    public Integer getDocId() {
+    public Long getDocId() {
         return docId;
     }
 
-    public void setDocId(Integer docId) {
+    public void setDocId(Long docId) {
         this.docId = docId;
     }
 
