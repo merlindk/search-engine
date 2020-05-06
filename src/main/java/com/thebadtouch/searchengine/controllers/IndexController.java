@@ -7,7 +7,7 @@ import com.thebadtouch.searchengine.entities.Post;
 import com.thebadtouch.searchengine.entities.Word;
 import com.thebadtouch.searchengine.repositories.DocumentRepository;
 import com.thebadtouch.searchengine.repositories.PostRepository;
-import com.thebadtouch.searchengine.repositories.VocabularyRepository;
+import com.thebadtouch.searchengine.repositories.WordRepository;
 import com.thebadtouch.searchengine.services.indexing.IndexingService;
 import com.thebadtouch.searchengine.services.indexing.impl.IndexingServiceImpl;
 import org.slf4j.Logger;
@@ -37,18 +37,18 @@ public class IndexController {
 
     private final IndexingService indexingService;
     private final PostRepository postRepository;
-    private final VocabularyRepository vocabularyRepository;
+    private final WordRepository wordRepository;
     private final DocumentRepository documentRepository;
 
     public IndexController(Properties properties,
                            IndexingService indexingService,
                            PostRepository postRepository,
-                           VocabularyRepository vocabularyRepository,
+                           WordRepository wordRepository,
                            DocumentRepository documentRepository) {
         this.properties = properties;
         this.indexingService = indexingService;
         this.postRepository = postRepository;
-        this.vocabularyRepository = vocabularyRepository;
+        this.wordRepository = wordRepository;
         this.documentRepository = documentRepository;
     }
 
@@ -61,7 +61,7 @@ public class IndexController {
                 .map(FileSystemResource::new)
                 .collect(Collectors.toSet());
 
-        Set<Post> postList = indexingService.generatePostList(resources);
+        Set<Post> postList = indexingService.indexResources(resources);
         Set<Document> documentList = new HashSet<>();
         Set<Word> wordList = new HashSet<>();
         for (Post post : postList) {
@@ -70,7 +70,7 @@ public class IndexController {
         }
         documentRepository.saveAll(documentList);
         LOG.info("Saved {} documents", documentList.size());
-        vocabularyRepository.saveAll(wordList);
+        wordRepository.saveAll(wordList);
         LOG.info("Saved {} words", wordList.size());
         List<Post> storedPostList = (List<Post>) postRepository.saveAll(postList);
         LOG.info("Saved {} Posts", storedPostList.size());

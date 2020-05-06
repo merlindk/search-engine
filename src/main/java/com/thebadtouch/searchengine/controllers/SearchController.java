@@ -3,7 +3,9 @@ package com.thebadtouch.searchengine.controllers;
 import com.thebadtouch.searchengine.config.Properties;
 import com.thebadtouch.searchengine.constants.Constants;
 import com.thebadtouch.searchengine.dto.Result;
+import com.thebadtouch.searchengine.dto.Search;
 import com.thebadtouch.searchengine.services.readers.ResourceReader;
+import com.thebadtouch.searchengine.services.search.SearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -11,10 +13,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class SearchController {
@@ -24,12 +23,25 @@ public class SearchController {
     private final Properties properties;
     private final ResourceLoader resourceLoader;
     private final ResourceReader resourceReader;
+    private final SearchService searchService;
 
 
-    public SearchController(Properties properties, ResourceLoader resourceLoader, ResourceReader resourceReader) {
+    public SearchController(Properties properties, ResourceLoader resourceLoader, ResourceReader resourceReader,
+                            SearchService searchService) {
         this.properties = properties;
         this.resourceLoader = resourceLoader;
         this.resourceReader = resourceReader;
+        this.searchService = searchService;
+    }
+
+    @RequestMapping(value = {"/search"}, method = {RequestMethod.POST},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> search(@RequestBody Search body) {
+        LOG.info("Searching for: {}", body.getQuery());
+
+        String result = searchService.searchQuery(body.getQuery());
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/file/{id}"}, method = {RequestMethod.GET},

@@ -10,17 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Service
 public class IndexingServiceImpl implements IndexingService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IndexingServiceImpl.class);
 
-    private static final String SPACE_EQUIVALENT_REGEX = "[.,\\-;/*" + System.lineSeparator() + "]";
+    private static final String SPACE_EQUIVALENT_REGEX = "[.,\\-;*/" + System.lineSeparator() + "]";
     private static final String REMOVABLE_CHARACTERS_REGEX = "[^\\w\\s]";
     private static final String MULTIPLE_SPACE = " +";
     private static final String SPACE = " ";
@@ -34,9 +31,9 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public Set<Post> generatePostList(Set<Resource> resourceSet) {
+    public Set<Post> indexResources(Set<Resource> resourceSet) {
         TreeSet<Post> postList = new TreeSet<>();
-        Map<String, Word> vocabularyMap = new HashMap<>();
+
         int resourceCount = resourceSet.size();
         int currentResourceCount = 1;
         for (Resource resource : resourceSet) {
@@ -45,29 +42,36 @@ public class IndexingServiceImpl implements IndexingService {
             String docName = resource.getFilename();
             Document document = Document.builder().name(docName).build();
 
-            Map<String, Post> subPostMap = new HashMap<>();
-
             String original = resourceReader.asString(resource).toLowerCase();
-            String purged = purgeText(original);
 
-            String[] words = purged.split(SPACE);
-
-            for (String word : words) {
-                Word currentWord = getVocabulary(vocabularyMap, word);
-
-                Post existingPost = getPost(subPostMap, document, currentWord);
-                existingPost.incrementTermFrequency();
-
-                long vocabularyMaxFrequency = currentWord.getMaxTermFrequency();
-                long existingPostFrequency = existingPost.getTermFrequency();
-
-                if (existingPostFrequency > vocabularyMaxFrequency) {
-                    currentWord.setMaxTermFrequency(existingPostFrequency);
-                }
-            }
-            postList.addAll(subPostMap.values());
+            postList.addAll(generatePostList(original, document));
         }
         return postList;
+    }
+
+    @Override
+    public List<Post> generatePostList(String original, Document document) {
+        Map<String, Post> subPostMap = new HashMap<>();
+        Map<String, Word> wordMap = new HashMap<>();
+        String purged = purgeText(original);
+
+        String[] words = purged.split(SPACE);
+
+        for (String word : words) {
+            Word currentWord = getCurrentWord(wordMap, word);
+
+            Post existingPost = getPost(subPostMap, document, currentWord);
+            existingPost.incrementTermFrequency();
+
+            long vocabularyMaxFrequency = currentWord.getMaxTermFrequency();
+            long existingPostFrequency = existingPost.getTermFrequency();
+
+            if (existingPostFrequency > vocabularyMaxFrequency) {
+                currentWord.setMaxTermFrequency(existingPostFrequency);
+            }
+        }
+
+        return new ArrayList<>(subPostMap.values());
     }
 
     private String purgeText(String content) {
@@ -92,15 +96,15 @@ public class IndexingServiceImpl implements IndexingService {
         return existingPost;
     }
 
-    private Word getVocabulary(Map<String, Word> vocabularyMap, String word) {
-        Word currentWord = vocabularyMap.get(word);
+    private Word getCurrentWord(Map<String, Word> wordMap, String word) {
+        Word currentWord = wordMap.get(word);
         if (currentWord == null) {
             currentWord = Word.builder()
                     .value(word)
                     .maxTermFrequency(1L)
                     .wordFrequency(0L)
                     .build();
-            vocabularyMap.put(word, currentWord);
+            wordMap.put(word, currentWord);
         }
         return currentWord;
     }

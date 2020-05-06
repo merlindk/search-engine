@@ -12,7 +12,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Word implements Serializable {
+public class Word implements Serializable, Comparable<Word>  {
     private Long wordId;
     private String value;
     private Long wordFrequency;
@@ -77,5 +77,10 @@ public class Word implements Serializable {
 
     public void addToFrequency() {
         wordFrequency++;
+    }
+
+    @Override
+    public int compareTo(Word o) {
+        return this.wordFrequency.compareTo(o.getWordFrequency());
     }
 }
