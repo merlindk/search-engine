@@ -31,8 +31,8 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public List<Post> indexResources(Set<Resource> resourceSet) {
-        ArrayList<Post> postList = new ArrayList<>();
+    public Set<Post> indexResources(Set<Resource> resourceSet) {
+        Set<Post> postList = new TreeSet<>();
 
         Map<String, Word> wordMap = new HashMap<>();
         int resourceCount = resourceSet.size();
@@ -86,7 +86,8 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     private Post getPost(Map<String, Post> subPostMap, Document document, Word currentWord) {
-        Post existingPost = subPostMap.get(currentWord.getValue());
+        String key = currentWord.getValue() + document.getName();
+        Post existingPost = subPostMap.get(key);
         if (existingPost == null) {
             currentWord.addToFrequency();
             existingPost = Post.builder()
@@ -94,7 +95,7 @@ public class IndexingServiceImpl implements IndexingService {
                     .termFrequency(0L)
                     .wordByWordId(currentWord)
                     .build();
-            subPostMap.put(currentWord.getValue(), existingPost);
+            subPostMap.put(key, existingPost);
         }
         return existingPost;
     }

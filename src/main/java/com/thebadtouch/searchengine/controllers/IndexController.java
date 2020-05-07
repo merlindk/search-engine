@@ -61,7 +61,7 @@ public class IndexController {
                 .map(FileSystemResource::new)
                 .collect(Collectors.toSet());
 
-        List<Post> postList = indexingService.indexResources(resources);
+        Set<Post> postList = indexingService.indexResources(resources);
         Set<Document> documentList = new HashSet<>();
         Set<Word> wordList = new HashSet<>();
         for (Post post : postList) {
