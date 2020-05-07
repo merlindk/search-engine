@@ -22,10 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,13 +52,16 @@ public class IndexController {
     @RequestMapping(value = {"/index"}, method = {RequestMethod.GET},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Result> startIndexing() {
+        postRepository.deleteAll();
+        wordRepository.deleteAll();
+        documentRepository.deleteAll();
         String path = properties.getFilesToIndex();
         Set<Resource> resources = Stream.of(Objects.requireNonNull(new File(path).listFiles()))
                 .filter(file -> !file.isDirectory())
                 .map(FileSystemResource::new)
                 .collect(Collectors.toSet());
 
-        Set<Post> postList = indexingService.indexResources(resources);
+        List<Post> postList = indexingService.indexResources(resources);
         Set<Document> documentList = new HashSet<>();
         Set<Word> wordList = new HashSet<>();
         for (Post post : postList) {

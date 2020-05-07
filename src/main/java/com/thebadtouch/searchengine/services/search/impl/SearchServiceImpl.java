@@ -9,10 +9,7 @@ import com.thebadtouch.searchengine.services.indexing.IndexingService;
 import com.thebadtouch.searchengine.services.search.SearchService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Service
 public class SearchServiceImpl implements SearchService {
@@ -32,7 +29,7 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public String searchQuery(String query) {
-        List<Post> queryPosts = indexingService.generatePostList(query, null);
+        List<Post> queryPosts = indexingService.generatePostList(query, null, new HashMap<>());
         Set<Word> wordSet = new TreeSet<>();
         List<Document> documentList = new ArrayList<>();
         for (Post post : queryPosts) {

@@ -31,9 +31,10 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public Set<Post> indexResources(Set<Resource> resourceSet) {
-        TreeSet<Post> postList = new TreeSet<>();
+    public List<Post> indexResources(Set<Resource> resourceSet) {
+        ArrayList<Post> postList = new ArrayList<>();
 
+        Map<String, Word> wordMap = new HashMap<>();
         int resourceCount = resourceSet.size();
         int currentResourceCount = 1;
         for (Resource resource : resourceSet) {
@@ -44,15 +45,15 @@ public class IndexingServiceImpl implements IndexingService {
 
             String original = resourceReader.asString(resource).toLowerCase();
 
-            postList.addAll(generatePostList(original, document));
+            postList.addAll(generatePostList(original, document, wordMap));
         }
         return postList;
     }
 
     @Override
-    public List<Post> generatePostList(String original, Document document) {
+    public List<Post> generatePostList(String original, Document document, Map<String, Word> wordMap) {
         Map<String, Post> subPostMap = new HashMap<>();
-        Map<String, Word> wordMap = new HashMap<>();
+
         String purged = purgeText(original);
 
         String[] words = purged.split(SPACE);
@@ -79,7 +80,9 @@ public class IndexingServiceImpl implements IndexingService {
 
         content = content.replaceAll(REMOVABLE_CHARACTERS_REGEX, EMPTY);
 
-        return content.trim().replaceAll(MULTIPLE_SPACE, SPACE);
+        content = content.trim().replaceAll(MULTIPLE_SPACE, SPACE);
+
+        return content;
     }
 
     private Post getPost(Map<String, Post> subPostMap, Document document, Word currentWord) {
