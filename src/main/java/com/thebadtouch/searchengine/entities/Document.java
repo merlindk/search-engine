@@ -17,7 +17,6 @@ public class Document implements Serializable {
     private String name;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "doc_id", nullable = false)
     public Long getDocId() {
         return docId;

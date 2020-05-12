@@ -9,19 +9,21 @@ spring:
   application:
     name: ${info.app.name}
   jpa:
-    show-sql: false
+    show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
-        temp:
-          use_jdbc_metadata_defaults: false
+        generate_statistics: true
+        order_inserts: true
+        jdbc:
+          batch_size: 1000
   datasource:
     url: jdbc:postgresql://localhost:5432/the_bad_touch
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 5
+      maximum-pool-size: 10
     type: com.zaxxer.hikari.HikariDataSource
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
@@ -30,8 +32,6 @@ logging:
   level:
     com:
       thebadtouch: DEBUG
-
-
 ---
 spring:
   profiles: windows

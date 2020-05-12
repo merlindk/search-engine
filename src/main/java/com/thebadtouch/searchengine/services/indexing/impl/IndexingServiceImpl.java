@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import sun.rmi.runtime.Log;
 
 import java.util.*;
 
@@ -23,6 +24,8 @@ public class IndexingServiceImpl implements IndexingService {
     private static final String SPACE = " ";
     private static final String EMPTY = "";
 
+    private long wordIndex = 1;
+    private long postIndex = 1;
 
     private final ResourceReader resourceReader;
 
@@ -31,23 +34,39 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public Set<Post> indexResources(Set<Resource> resourceSet) {
-        Set<Post> postList = new TreeSet<>();
+    public List<Post> indexResources(Set<Resource> resourceSet) {
+        List<Post> postList = new ArrayList<>();
 
         Map<String, Word> wordMap = new HashMap<>();
         int resourceCount = resourceSet.size();
-        int currentResourceCount = 1;
+        long currentResourceCount = 1;
         for (Resource resource : resourceSet) {
             LOG.info("Processing resource {} out of {}", currentResourceCount, resourceCount);
-            currentResourceCount++;
             String docName = resource.getFilename();
-            Document document = Document.builder().name(docName).build();
+            Document document = Document.builder().docId(currentResourceCount).name(docName).build();
+            currentResourceCount++;
 
             String original = resourceReader.asString(resource).toLowerCase();
-
-            postList.addAll(generatePostList(original, document, wordMap));
+            List<Post> generated = generatePostList(original, document, wordMap);
+            LOG.info("Generated {} posts", generated.size());
+            postList.addAll(generated);
         }
-        return postList;
+        LOG.info("Generated {} total posts", postList.size());
+        return purgeStopWords(postList, resourceCount);
+
+    }
+
+    private List<Post> purgeStopWords(List<Post> postList, int totalDocs) {
+        double mark = totalDocs * 0.8;
+        LOG.info("Dropping stop words with {} frequency", mark);
+        List<Post> purgedList = new ArrayList<>();
+        for (Post post: postList) {
+            Long wordFrequency = post.getWordByWordId().getWordFrequency();
+            if(wordFrequency < mark){
+                purgedList.add(post);
+            }
+        }
+        return purgedList;
     }
 
     @Override
@@ -91,10 +110,12 @@ public class IndexingServiceImpl implements IndexingService {
         if (existingPost == null) {
             currentWord.addToFrequency();
             existingPost = Post.builder()
+                    .postId(postIndex)
                     .documentByDocId(document)
                     .termFrequency(0L)
                     .wordByWordId(currentWord)
                     .build();
+            postIndex++;
             subPostMap.put(key, existingPost);
         }
         return existingPost;
@@ -105,9 +126,11 @@ public class IndexingServiceImpl implements IndexingService {
         if (currentWord == null) {
             currentWord = Word.builder()
                     .value(word)
+                    .wordId(wordIndex)
                     .maxTermFrequency(1L)
                     .wordFrequency(0L)
                     .build();
+            wordIndex++;
             wordMap.put(word, currentWord);
         }
         return currentWord;

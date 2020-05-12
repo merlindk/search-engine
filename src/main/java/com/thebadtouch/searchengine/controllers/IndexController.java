@@ -1,5 +1,6 @@
 package com.thebadtouch.searchengine.controllers;
 
+import com.google.common.base.Stopwatch;
 import com.thebadtouch.searchengine.config.Properties;
 import com.thebadtouch.searchengine.dto.Result;
 import com.thebadtouch.searchengine.entities.Document;
@@ -22,7 +23,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,20 +66,22 @@ public class IndexController {
                 .map(FileSystemResource::new)
                 .collect(Collectors.toSet());
 
-        Set<Post> postList = indexingService.indexResources(resources);
+        List<Post> postList = indexingService.indexResources(resources);
         Set<Document> documentList = new HashSet<>();
         Set<Word> wordList = new HashSet<>();
         for (Post post : postList) {
             documentList.add(post.getDocumentByDocId());
             wordList.add(post.getWordByWordId());
         }
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        LOG.info("About to save {} documents", documentList.size());
+        LOG.info("About to save {} words", wordList.size());
+        LOG.info("About to save {} posts", postList.size());
         documentRepository.saveAll(documentList);
-        LOG.info("Saved {} documents", documentList.size());
         wordRepository.saveAll(wordList);
-        LOG.info("Saved {} words", wordList.size());
         List<Post> storedPostList = (List<Post>) postRepository.saveAll(postList);
         LOG.info("Saved {} Posts", storedPostList.size());
-        LOG.info("Finished indexing");
+        LOG.info("Finished indexing in {}", stopwatch.elapsed(TimeUnit.SECONDS));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

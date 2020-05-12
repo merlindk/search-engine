@@ -19,7 +19,6 @@ public class Word implements Serializable, Comparable<Word>  {
     private Long maxTermFrequency;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "word_id", nullable = false)
     public Long getWordId() {
         return wordId;

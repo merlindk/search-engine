@@ -19,7 +19,6 @@ public class Post implements Serializable, Comparable<Post> {
     private Long termFrequency;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id", nullable = false)
     public Long getPostId() {
         return postId;
