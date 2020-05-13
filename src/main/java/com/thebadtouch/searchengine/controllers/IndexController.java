@@ -58,9 +58,9 @@ public class IndexController {
     @RequestMapping(value = {"/index/{stopWordsPercentage}"}, method = {RequestMethod.GET},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Result> startIndexing(@PathVariable(value = "stopWordsPercentage") double stopWordsPercentage) {
-        postRepository.deleteAll();
-        wordRepository.deleteAll();
-        documentRepository.deleteAll();
+        postRepository.truncateTable();
+        wordRepository.truncateTable();
+        documentRepository.truncateTable();
         String path = properties.getFilesToIndex();
         Set<Resource> resources = Stream.of(Objects.requireNonNull(new File(path).listFiles()))
                 .filter(file -> !file.isDirectory())
