@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 public interface PostRepository extends CrudRepository<Post, Long> {
     List<Post> findAllByWordByWordId_WordId(Long wordId);
 

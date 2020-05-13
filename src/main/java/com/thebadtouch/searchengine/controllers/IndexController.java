@@ -11,6 +11,7 @@ import com.thebadtouch.searchengine.repositories.PostRepository;
 import com.thebadtouch.searchengine.repositories.WordRepository;
 import com.thebadtouch.searchengine.services.indexing.IndexingService;
 import com.thebadtouch.searchengine.services.indexing.impl.IndexingServiceImpl;
+import com.thebadtouch.searchengine.services.persistance.DatabaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -24,10 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,17 +40,20 @@ public class IndexController {
     private final PostRepository postRepository;
     private final WordRepository wordRepository;
     private final DocumentRepository documentRepository;
+    private final DatabaseService databaseService;
 
     public IndexController(Properties properties,
                            IndexingService indexingService,
                            PostRepository postRepository,
                            WordRepository wordRepository,
-                           DocumentRepository documentRepository) {
+                           DocumentRepository documentRepository,
+                           DatabaseService databaseService) {
         this.properties = properties;
         this.indexingService = indexingService;
         this.postRepository = postRepository;
         this.wordRepository = wordRepository;
         this.documentRepository = documentRepository;
+        this.databaseService = databaseService;
     }
 
     @RequestMapping(value = {"/index/{stopWordsPercentage}"}, method = {RequestMethod.GET},
@@ -74,15 +75,23 @@ public class IndexController {
             documentList.add(post.getDocumentByDocId());
             wordList.add(post.getWordByWordId());
         }
-        Stopwatch stopwatch = Stopwatch.createStarted();
+
         LOG.info("About to save {} documents", documentList.size());
         LOG.info("About to save {} words", wordList.size());
         LOG.info("About to save {} posts", postList.size());
-        documentRepository.saveAll(documentList);
-        wordRepository.saveAll(wordList);
-        List<Post> storedPostList = (List<Post>) postRepository.saveAll(postList);
-        LOG.info("Saved {} Posts", storedPostList.size());
-        LOG.info("Finished indexing in {}", stopwatch.elapsed(TimeUnit.SECONDS));
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        databaseService.blindInsertDocs(new ArrayList<>(documentList));
+        LOG.info("Finished saving docs via dbsvc in {}s", stopwatch.elapsed(TimeUnit.SECONDS));
+
+        stopwatch = Stopwatch.createStarted();
+        databaseService.blindInsertWords(new ArrayList<>(wordList));
+        LOG.info("Finished saving words via dbsvc in {}s", stopwatch.elapsed(TimeUnit.SECONDS));
+
+        stopwatch = Stopwatch.createStarted();
+        databaseService.blindInsertPosts(new ArrayList<>(postList));
+        LOG.info("Finished saving posts via dbsvc in {}s", stopwatch.elapsed(TimeUnit.SECONDS));
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

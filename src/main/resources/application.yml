@@ -13,7 +13,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
-        generate_statistics: true
+        generate_statistics: false
         order_inserts: true
         jdbc:
           batch_size: 1000
@@ -37,7 +37,7 @@ spring:
   profiles: windows
 
 application:
-  files-to-index: "files/"
+  files-to-index: "test/"
   encoding: "Cp1252"
 
 

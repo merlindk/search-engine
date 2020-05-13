@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public interface DocumentRepository extends CrudRepository<Document, Long> {
     @Modifying
     @Transactional
