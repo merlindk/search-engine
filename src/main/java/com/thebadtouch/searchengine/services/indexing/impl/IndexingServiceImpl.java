@@ -33,7 +33,7 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public List<Post> indexResources(Set<Resource> resourceSet) {
+    public List<Post> indexResources(Set<Resource> resourceSet, double stopWordsPercentage) {
         List<Post> postList = new ArrayList<>();
 
         Map<String, Word> wordMap = new HashMap<>();
@@ -51,13 +51,13 @@ public class IndexingServiceImpl implements IndexingService {
             postList.addAll(generated);
         }
         LOG.info("Generated {} total posts", postList.size());
-        return purgeStopWords(postList, resourceCount);
+        return purgeStopWords(postList, resourceCount, stopWordsPercentage);
 
     }
 
-    private List<Post> purgeStopWords(List<Post> postList, int totalDocs) {
-        double mark = totalDocs * 0.8;
-        LOG.info("Dropping stop words with {} frequency", mark);
+    private List<Post> purgeStopWords(List<Post> postList, int totalDocs, double stopWordsPercentage) {
+        double mark = totalDocs * stopWordsPercentage;
+        LOG.info("Dropping stop words with frequency greater than {}", mark);
         List<Post> purgedList = new ArrayList<>();
         for (Post post: postList) {
             Long wordFrequency = post.getWordByWordId().getWordFrequency();

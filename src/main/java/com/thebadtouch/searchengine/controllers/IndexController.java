@@ -18,6 +18,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,9 +55,9 @@ public class IndexController {
         this.documentRepository = documentRepository;
     }
 
-    @RequestMapping(value = {"/index"}, method = {RequestMethod.GET},
+    @RequestMapping(value = {"/index/{stopWordsPercentage}"}, method = {RequestMethod.GET},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Result> startIndexing() {
+    public ResponseEntity<Result> startIndexing(@PathVariable(value = "stopWordsPercentage") double stopWordsPercentage) {
         postRepository.deleteAll();
         wordRepository.deleteAll();
         documentRepository.deleteAll();
@@ -66,7 +67,7 @@ public class IndexController {
                 .map(FileSystemResource::new)
                 .collect(Collectors.toSet());
 
-        List<Post> postList = indexingService.indexResources(resources);
+        List<Post> postList = indexingService.indexResources(resources, stopWordsPercentage);
         Set<Document> documentList = new HashSet<>();
         Set<Word> wordList = new HashSet<>();
         for (Post post : postList) {
@@ -83,5 +84,11 @@ public class IndexController {
         LOG.info("Saved {} Posts", storedPostList.size());
         LOG.info("Finished indexing in {}", stopwatch.elapsed(TimeUnit.SECONDS));
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = {"/index"}, method = {RequestMethod.GET},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Result> startIndexing() {
+        return startIndexing(0.8);
     }
 }

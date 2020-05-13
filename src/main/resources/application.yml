@@ -9,7 +9,7 @@ spring:
   application:
     name: ${info.app.name}
   jpa:
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:

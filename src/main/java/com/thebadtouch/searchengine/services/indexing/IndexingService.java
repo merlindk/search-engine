@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface IndexingService {
 
-    List<Post> indexResources(Set<Resource> resourceSet);
+    List<Post> indexResources(Set<Resource> resourceSet, double stopWordsPercentage);
 
     List<Post> generatePostList(String original, Document document, Map<String, Word> wordMap);
 }
