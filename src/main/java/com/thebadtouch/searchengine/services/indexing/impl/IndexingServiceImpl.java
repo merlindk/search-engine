@@ -22,11 +22,9 @@ public class IndexingServiceImpl implements IndexingService {
     private static final String MULTIPLE_SPACE = " +";
     private static final String SPACE = " ";
     private static final String EMPTY = "";
-
+    private final ResourceReader resourceReader;
     private long wordIndex = 1;
     private long postIndex = 1;
-
-    private final ResourceReader resourceReader;
 
     public IndexingServiceImpl(ResourceReader resourceReader) {
         this.resourceReader = resourceReader;
@@ -59,9 +57,9 @@ public class IndexingServiceImpl implements IndexingService {
         double mark = totalDocs * stopWordsPercentage;
         LOG.info("Dropping stop words with frequency greater than {}", mark);
         List<Post> purgedList = new ArrayList<>();
-        for (Post post: postList) {
+        for (Post post : postList) {
             Long wordFrequency = post.getWordByWordId().getWordFrequency();
-            if(wordFrequency < mark){
+            if (wordFrequency < mark) {
                 purgedList.add(post);
             }
         }

@@ -1,10 +1,11 @@
 package com.thebadtouch.searchengine.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -12,50 +13,24 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Word implements Serializable, Comparable<Word>  {
-    private Long wordId;
-    private String value;
-    private Long wordFrequency;
-    private Long maxTermFrequency;
-
+@Getter
+@Setter
+public class Word implements Serializable, Comparable<Word> {
     @Id
     @Column(name = "word_id", nullable = false)
-    public Long getWordId() {
-        return wordId;
-    }
-
-    public void setWordId(Long vocabId) {
-        this.wordId = vocabId;
-    }
-
+    private Long wordId;
     @Basic
     @Column(name = "value", nullable = true, length = -1)
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String word) {
-        this.value = word;
-    }
-
+    private String value;
     @Basic
     @Column(name = "word_frequency", nullable = true, precision = 0)
-    public Long getWordFrequency() {
-        return wordFrequency;
-    }
-
-    public void setWordFrequency(Long reverseFrequency) {
-        this.wordFrequency = reverseFrequency;
-    }
-
+    private Long wordFrequency;
     @Basic
     @Column(name = "max_term_frequency", nullable = true)
-    public Long getMaxTermFrequency() {
-        return maxTermFrequency;
-    }
+    private Long maxTermFrequency;
 
-    public void setMaxTermFrequency(Long maxTermFrequency) {
-        this.maxTermFrequency = maxTermFrequency;
+    public void addToFrequency() {
+        wordFrequency++;
     }
 
     @Override
@@ -72,10 +47,6 @@ public class Word implements Serializable, Comparable<Word>  {
     @Override
     public int hashCode() {
         return Objects.hash(wordId, value, wordFrequency, maxTermFrequency);
-    }
-
-    public void addToFrequency() {
-        wordFrequency++;
     }
 
     @Override

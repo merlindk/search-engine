@@ -59,9 +59,11 @@ public class IndexController {
     @RequestMapping(value = {"/index/{stopWordsPercentage}"}, method = {RequestMethod.GET},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Result> startIndexing(@PathVariable(value = "stopWordsPercentage") double stopWordsPercentage) {
+
         postRepository.truncateTable();
         wordRepository.truncateTable();
         documentRepository.truncateTable();
+
         String path = properties.getFilesToIndex();
         Set<Resource> resources = Stream.of(Objects.requireNonNull(new File(path).listFiles()))
                 .filter(file -> !file.isDirectory())
@@ -76,6 +78,8 @@ public class IndexController {
             wordList.add(post.getWordByWordId());
         }
 
+        Collections.sort(postList);
+
         LOG.info("About to save {} documents", documentList.size());
         LOG.info("About to save {} words", wordList.size());
         LOG.info("About to save {} posts", postList.size());
@@ -89,7 +93,7 @@ public class IndexController {
         LOG.info("Finished saving words via dbsvc in {}s", stopwatch.elapsed(TimeUnit.SECONDS));
 
         stopwatch = Stopwatch.createStarted();
-        databaseService.blindInsertPosts(new ArrayList<>(postList));
+        databaseService.blindInsertPosts(postList);
         LOG.info("Finished saving posts via dbsvc in {}s", stopwatch.elapsed(TimeUnit.SECONDS));
 
         return new ResponseEntity<>(HttpStatus.OK);

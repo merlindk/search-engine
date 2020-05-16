@@ -1,8 +1,6 @@
 package com.thebadtouch.searchengine.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,28 +10,20 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Document implements Serializable {
-    private Long docId;
-    private String name;
-
+@Getter
+@Setter
+public class Document implements Serializable, Comparable<Document> {
     @Id
     @Column(name = "doc_id", nullable = false)
-    public Long getDocId() {
-        return docId;
-    }
-
-    public void setDocId(Long docId) {
-        this.docId = docId;
-    }
-
+    private Long docId;
     @Basic
     @Column(name = "name", nullable = true, length = -1)
-    public String getName() {
-        return name;
-    }
+    private String name;
+    @Transient
+    private Double weight = 0D;
 
-    public void setName(String name) {
-        this.name = name;
+    public void addWeight(Double newWeight) {
+        weight += newWeight;
     }
 
     @Override
@@ -48,5 +38,10 @@ public class Document implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(docId, name);
+    }
+
+    @Override
+    public int compareTo(Document o) {
+        return o.getWeight().compareTo(this.weight);
     }
 }

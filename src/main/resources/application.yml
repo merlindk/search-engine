@@ -37,7 +37,7 @@ spring:
   profiles: windows
 
 application:
-  files-to-index: "test/"
+  files-to-index: "files/"
   encoding: "Cp1252"
 
 
@@ -46,5 +46,5 @@ spring:
   profiles: linux
 
 application:
-  files-to-index: "../files/"
+  files-to-index: "files/"
   encoding: "Cp1252"

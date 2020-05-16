@@ -41,12 +41,13 @@ public class SearchController {
 
         String result = searchService.searchQuery(body.getQuery());
 
+        LOG.info("Finished searching");
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/file/{id}"}, method = {RequestMethod.GET},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Result> retrieveFile(@PathVariable("id") String id) {
+            produces = {MediaType.TEXT_PLAIN_VALUE})
+    public ResponseEntity<String> retrieveFile(@PathVariable("id") String id) {
         String path = "file:" + properties.getFilesToIndex() + id;
 
         LOG.info("About to load file {}", path);
@@ -57,14 +58,11 @@ public class SearchController {
 
         Resource resource = resourceLoader.getResource(path);
 
-        ResponseEntity<Result> resultResponseEntity;
+        ResponseEntity<String> resultResponseEntity;
         if (resource.exists()) {
             String content = resourceReader.asString(resource);
             LOG.debug("Reading {}", content);
-            Result result = Result.builder()
-                    .content(content)
-                    .build();
-            resultResponseEntity = new ResponseEntity<>(result, HttpStatus.OK);
+            resultResponseEntity = new ResponseEntity<>(content, HttpStatus.OK);
         } else {
             resultResponseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

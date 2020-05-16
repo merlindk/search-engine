@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 public interface WordRepository extends CrudRepository<Word, Long> {
-    Word findByValue(String value);
+    @Query(value = "select * from word", nativeQuery = true)
+    List<Word> getAllWords();
 
     @Modifying
     @Transactional
