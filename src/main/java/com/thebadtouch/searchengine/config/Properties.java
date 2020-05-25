@@ -12,5 +12,6 @@ import org.springframework.context.annotation.Configuration;
 public class Properties {
 
     private String filesToIndex;
+    private String newFiles;
     private String encoding;
 }

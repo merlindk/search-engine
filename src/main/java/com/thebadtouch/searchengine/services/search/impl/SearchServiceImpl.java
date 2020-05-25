@@ -4,7 +4,6 @@ import com.google.common.base.Stopwatch;
 import com.thebadtouch.searchengine.entities.Document;
 import com.thebadtouch.searchengine.entities.Post;
 import com.thebadtouch.searchengine.entities.Word;
-import com.thebadtouch.searchengine.repositories.DocumentRepository;
 import com.thebadtouch.searchengine.services.indexing.IndexingService;
 import com.thebadtouch.searchengine.services.persistance.DatabaseService;
 import com.thebadtouch.searchengine.services.search.SearchService;
@@ -28,11 +27,10 @@ public class SearchServiceImpl implements SearchService {
     private final DatabaseService databaseService;
 
     public SearchServiceImpl(IndexingService indexingService,
-                             DocumentRepository documentRepository,
                              DatabaseService databaseService) {
         this.indexingService = indexingService;
-        totalCount = documentRepository.countAll();
         this.databaseService = databaseService;
+        totalCount = databaseService.getTotalDocuments();
     }
 
     @Override
@@ -65,7 +63,6 @@ public class SearchServiceImpl implements SearchService {
                 Document currentDocument = currentPost.getDocumentByDocId();
                 double calculatedWeight = calculateWeight(totalCount, currentPost.getTermFrequency(), word.getWordFrequency());
                 LOG.info("Calculated weight {} for word {} in document {}", calculatedWeight, word.getValue(), currentDocument.getName());
-
                 currentDocument.addWeight(calculatedWeight);
                 queryResultDocumentSet.add(currentDocument);
 
@@ -81,6 +78,8 @@ public class SearchServiceImpl implements SearchService {
             sb.append(": ");
             sb.append(document.getWeight());
             sb.append(System.lineSeparator());
+            //Vuelve el peso a cero de los Docs cacheados
+            document.setWeight(0D);
         }
 
         return sb.toString();

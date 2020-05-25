@@ -5,6 +5,8 @@ import com.thebadtouch.searchengine.entities.Post;
 import com.thebadtouch.searchengine.entities.Word;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface DatabaseService {
     void blindInsertWords(List<Word> objects);
@@ -16,4 +18,22 @@ public interface DatabaseService {
     Word getWordByName(String name);
 
     List<Post> getAllPostsForWordId(Long wordId);
+
+    Map<String, Word> getWordMap();
+
+    void truncateTables();
+
+    void saveAndUpdateAllWords(Set<Word> wordList);
+
+    long getLastPostId();
+
+    long getLastWordId();
+
+    long getLastDocId();
+
+    long getTotalDocuments();
+
+    void deleteWords(List<Long> wordsToBeDeleted);
+
+    void evictAllCacheValues();
 }

@@ -6,6 +6,10 @@ server:
   port: 8000
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   application:
     name: ${info.app.name}
   jpa:
@@ -13,10 +17,12 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
-        generate_statistics: false
+        generate_statistics: true
         order_inserts: true
         jdbc:
           batch_size: 1000
+          batch_size_insert: 1000
+          batch_size_delete: 1000
   datasource:
     url: jdbc:postgresql://localhost:5432/the_bad_touch
     username: postgres
@@ -31,13 +37,14 @@ spring:
 logging:
   level:
     com:
-      thebadtouch: DEBUG
+      thebadtouch: INFO
 ---
 spring:
   profiles: windows
 
 application:
   files-to-index: "files/"
+  new-files: "new_files/"
   encoding: "Cp1252"
 
 

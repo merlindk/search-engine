@@ -10,6 +10,9 @@ import java.util.List;
 
 @Transactional
 public interface WordRepository extends CrudRepository<Word, Long> {
+
+    Word findTopByOrderByWordIdDesc();
+
     @Query(value = "select * from word", nativeQuery = true)
     List<Word> getAllWords();
 
@@ -17,6 +20,5 @@ public interface WordRepository extends CrudRepository<Word, Long> {
     @Transactional
     @Query(value = "truncate table word restart identity cascade", nativeQuery = true)
     void truncateTable();
-
 
 }

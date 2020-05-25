@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface DocumentRepository extends CrudRepository<Document, Long> {
 
+
+    Document findTopByOrderByDocIdDesc();
+
     @Query(value = "select count(*) from document", nativeQuery = true)
     Long countAll();
 
