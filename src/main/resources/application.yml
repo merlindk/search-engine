@@ -40,7 +40,7 @@ logging:
       thebadtouch: INFO
 ---
 spring:
-  profiles: windows
+  profiles: local
 
 application:
   files-to-index: "files/"
@@ -50,8 +50,15 @@ application:
 
 ---
 spring:
-  profiles: linux
+  profiles: remote
 
 application:
   files-to-index: "files/"
   encoding: "Cp1252"
+
+logging:
+  level:
+    com:
+      apc: DEBUG
+  file:
+    name: /opt/search-engine/logs/search-engine.log

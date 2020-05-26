@@ -5,7 +5,7 @@
 
     <springProperty scope="context" name="app.name" source="info.app.name"/>
     <springProperty scope="context" name="spring.profiles.active" source="spring.profiles.active"/>
-
+    <springProfile name="local">
         <springProperty scope="context" name="app.region" source="app.region"/>
 
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -21,6 +21,27 @@
             <discardingThreshold>0</discardingThreshold>
             <appender-ref ref="CONSOLE"/>
         </appender>
+    </springProfile>
+    <springProfile name="!local">
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_FILE}</file>
+            <append>true</append>
+            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                <layout class="ch.qos.logback.classic.PatternLayout">
+                    <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) ${spring.profiles.active} %clr(${app.name}){cyan} [%15.15t{14}] %-40.40logger{39} : %m%n</pattern>
+                </layout>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_FILE}.%d</fileNamePattern>
+            </rollingPolicy>
+        </appender>
+
+        <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+            <queueSize>500</queueSize>
+            <discardingThreshold>0</discardingThreshold>
+            <appender-ref ref="FILE"/>
+        </appender>
+    </springProfile>
 
     <root level="INFO">
         <appender-ref ref="ASYNC"/>
