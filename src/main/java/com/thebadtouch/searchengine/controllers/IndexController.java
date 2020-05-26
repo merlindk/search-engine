@@ -2,7 +2,6 @@ package com.thebadtouch.searchengine.controllers;
 
 import com.google.common.base.Stopwatch;
 import com.thebadtouch.searchengine.config.Properties;
-import com.thebadtouch.searchengine.dto.Result;
 import com.thebadtouch.searchengine.entities.Document;
 import com.thebadtouch.searchengine.entities.Post;
 import com.thebadtouch.searchengine.entities.Word;
@@ -12,7 +11,6 @@ import com.thebadtouch.searchengine.services.persistance.DatabaseService;
 import com.thebadtouch.searchengine.services.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -48,9 +46,11 @@ public class IndexController {
 
     @RequestMapping(value = {"/index/new"}, method = {RequestMethod.POST},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Result> startIndexingNew(@RequestParam("file") MultipartFile newFile) {
+    public ResponseEntity<String> startIndexingNew(@RequestParam("file") Set<MultipartFile> newFiles) {
 
-        storageService.store(newFile);
+        for (MultipartFile newFile : newFiles) {
+            storageService.store(newFile);
+        }
 
         String path = properties.getNewFiles();
         Set<Resource> resources = Stream.of(Objects.requireNonNull(new File(path).listFiles()))
@@ -84,13 +84,14 @@ public class IndexController {
         databaseService.blindInsertPosts(postList);
         LOG.info("Finished saving posts via dbsvc in {}s", stopwatch.elapsed(TimeUnit.SECONDS));
 
+        String response = String.format("Finished indexing %s documents, %s words and %s posts", documentList.size(), wordList.size(), postList.size());
         storageService.moveAll();
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/index/{stopWordsPercentage}"}, method = {RequestMethod.GET},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Result> startIndexing(@PathVariable(value = "stopWordsPercentage") double stopWordsPercentage) {
+    public ResponseEntity<String> startIndexing(@PathVariable(value = "stopWordsPercentage") double stopWordsPercentage) {
 
         databaseService.truncateTables();
 
@@ -124,13 +125,14 @@ public class IndexController {
         stopwatch = Stopwatch.createStarted();
         databaseService.blindInsertPosts(postList);
         LOG.info("Finished saving posts via dbsvc in {}s", stopwatch.elapsed(TimeUnit.SECONDS));
+        String response = String.format("Finished indexing %s documents, %s words and %s posts", documentList.size(), wordList.size(), postList.size());
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/index"}, method = {RequestMethod.GET},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Result> startIndexing() {
+    public ResponseEntity<String> startIndexing() {
         return startIndexing(0.8);
     }
 }
