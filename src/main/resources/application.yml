@@ -38,6 +38,8 @@ logging:
   level:
     com:
       thebadtouch: INFO
+
+document-limit: 5
 ---
 spring:
   profiles: local

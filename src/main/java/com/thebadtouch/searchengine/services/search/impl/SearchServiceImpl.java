@@ -9,6 +9,7 @@ import com.thebadtouch.searchengine.services.persistance.DatabaseService;
 import com.thebadtouch.searchengine.services.search.SearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,9 +20,8 @@ public class SearchServiceImpl implements SearchService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SearchServiceImpl.class);
 
-
-    private static final int R = 5;
-    private final Long totalCount;
+    @Value("${document-limit}")
+    private int documentLimit;
 
     private final IndexingService indexingService;
     private final DatabaseService databaseService;
@@ -30,11 +30,11 @@ public class SearchServiceImpl implements SearchService {
                              DatabaseService databaseService) {
         this.indexingService = indexingService;
         this.databaseService = databaseService;
-        totalCount = databaseService.getTotalDocuments();
     }
 
     @Override
     public String searchQuery(String query) {
+        long totalCount = databaseService.getTotalDocuments();
         List<Post> queryPosts = indexingService.generatePostList(query, Document.builder().name("query").build(), new HashMap<>());
         LOG.info("Recovered {} posts for query", queryPosts.size());
         List<Word> wordList = new ArrayList<>();
@@ -56,7 +56,7 @@ public class SearchServiceImpl implements SearchService {
             List<Post> postsForWord = databaseService.getAllPostsForWordId(word.getWordId());
             LOG.info("Recovered {} posts for word {}", postsForWord.size(), word.getValue());
             for (int i = 0; i < postsForWord.size(); i++) {
-                if (i == R) {
+                if (i == documentLimit) {
                     break;
                 }
                 Post currentPost = postsForWord.get(i);
